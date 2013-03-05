@@ -1,0 +1,21 @@
+{
+  "name": "node-shutdown-manager",
+  "preferGlobal": false,
+  "version": "0.1.0",
+  "author": "David Tucker <david@davidtucker.net>",
+  "description": "performs a chain of actions when a shutdown is detected",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/davidtucker/node-shutdown-manager.git"
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">=0.8"
+  },
+  "dependencies": {
+    "q": "0.9.0"
+  }
+}
