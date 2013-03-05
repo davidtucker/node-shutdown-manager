@@ -1,7 +1,7 @@
 {
   "name": "node-shutdown-manager",
   "preferGlobal": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "David Tucker <david@davidtucker.net>",
   "description": "performs a chain of actions when a shutdown is detected",
   "repository": {
