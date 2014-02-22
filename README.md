@@ -25,6 +25,8 @@ Once created, you can add a method to the shutdown action chain by simply callin
 manager.addShutdownAction(sampleFunction);
 ```
 
+Additionally you can use the ```addFinalShutdownAction``` method.  This method is identical to addShutdownAction BUT it these methods are executed only after all the ```addShutdownAction``` promises are fulfilled.  This allows you to delay shutdown of some components (such as loggers) so that they are available until all the components shutdown.
+
 ### Asynchronous Functions
 
 You can add asynchronous functions to the action chain as long as they return a promise (that conforms to [CommonJS Promises/A](http://wiki.commonjs.org/wiki/Promises/A)).  I would recommend using [Q](https://github.com/kriskowal/q) if you are looking for a library that supports the promise spec.
