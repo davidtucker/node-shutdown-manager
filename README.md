@@ -25,6 +25,8 @@ Once created, you can add a method to the shutdown action chain by simply callin
 manager.addShutdownAction(sampleFunction);
 ```
 
+Additionally you can use the ```addFinalShutdownAction``` method.  This method is identical to addShutdownAction BUT it these methods are executed only after all the ```addShutdownAction``` promises are fulfilled.  This allows you to delay shutdown of some components (such as loggers) so that they are available until all the components shutdown.
+
 ### Asynchronous Functions
 
 You can add asynchronous functions to the action chain as long as they return a promise (that conforms to [CommonJS Promises/A](http://wiki.commonjs.org/wiki/Promises/A)).  I would recommend using [Q](https://github.com/kriskowal/q) if you are looking for a library that supports the promise spec.
@@ -52,6 +54,41 @@ var shutdownManager = require('node-shutdown-manager').createShutdownManager({
 });
 ```
 
+### Timeout
+
+Set a configuration setting of 'timeout' in milliseconds to limit how long the manager waits for promises to be fulfilled.
+
+```javascript
+var shutdownManager = require('node-shutdown-manager').createShutdownManager({
+	timeout: 10000 // Limit async shutdown promises to 10 seconds to execute
+});
+```
+
+### Events
+
+* Event 'preShutdown' calls a method with the arguments (reason, err).  If no listener is specified, the default action is to log the received event.  Reason will be SIGINT, TERM, exit, or uncaughtException.
+
+* Event 'shutdownActionException' is emitted if an exception is thrown out of a shutdown action.  Function is passed (err, method).  If no listener is specified, the default action is to log the received event.
+
+* Event 'shutdownComplete' is emitted once the shutdown actions are all executed.  Function is passed (exitCode, errors).  If no listener is specified, the default action is to log and call process.exit.  WARNING: If you register a listener to this event, you are responsible for calling Process.exit()  This allows the caller to alter exit codes or other details about the exit.
+
+```javascript
+var shutdownManager = require('node-shutdown-manager').createShutdownManager({});
+shutdownManager.on('preShutdown', function( reason, err) {
+    log.console("Shutting down for: "+reason);
+    log.console("Error: "+err.stack || err);
+});
+shutdownManager.on('shutdownActionException', function(err, method) {
+    log.console("Error in shutdown action being ignored:");
+    log.console("Error: "+err.stack || err);
+});
+shutdownManager.on('shutdownComplete', function(err, method) {
+    log.console("Shutdown actions complete");
+    log.console("Error: "+err.stack || err);
+    process.exit(0); // For example, if you never want to exit with an error code
+});
+```
+
 ## Shutdown Process
 
 The manager detects the following situations:
@@ -61,7 +98,6 @@ The manager detects the following situations:
 * When your application is shutting down due to an uncaught exception.
 
 It is important to know that other situations will cause the manager not to function.  For example, if your application is force closed (by receiving the SIGKILL signal), then the shutdown manager will not be executed.
-
 
 ## License
 
